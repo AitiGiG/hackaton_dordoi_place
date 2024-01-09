@@ -14,7 +14,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     def validate(self, attrs):
         password_conf = attrs.pop('password_confirmation')
-        if password_conf != attrs['password']:
+        if password_conf != attrs['password']:        
             raise serializers.ValidationError(
                 'Пароли не совпадают'
             )
