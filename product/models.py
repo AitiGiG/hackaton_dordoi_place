@@ -1,9 +1,14 @@
 from django.db import models
-
+from category.models import Category, Subcategory
 class Product(models.Model):
     title = models.CharField(max_length=100)
+    category = models.ForeignKey(
+        Category, 
+        on_delete=models.CASCADE,
+        related_name='products',
+    )
     subcategory = models.ForeignKey(
-        'Subcategory', 
+        Subcategory, 
         on_delete=models.CASCADE,
         related_name='products',
     )
