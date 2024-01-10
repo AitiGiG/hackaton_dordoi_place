@@ -30,15 +30,8 @@ class UserRegistrationAPIView(APIView):
 class LoginView(TokenObtainPairView):
     permission_classes = (permissions.AllowAny,)
 
-class LogoutView(APIView):
-    permission_classes = [permissions.IsAuthenticated]
+class LogoutView(TokenBlacklistView):
+    permission_classes = [permissions.AllowAny]
 
-    def post(self, request):
-        try:
-            refresh_token = request.data.get('refresh')
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-
-            return Response(status=status.HTTP_205_RESET_CONTENT)
-        except Exception as e:
-            raise ValidationError('Invalid token')
+class RefreshTokenView(TokenRefreshView):
+    permission_classes = [permissions.AllowAny]

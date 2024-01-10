@@ -19,10 +19,10 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['title']
     filersets_fields = ['category']
-
+    
     def get_permissions(self):
         if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
-            return [IsSellerPermission()]
+            return [IsSellerPermission(), ]
         return [permissions.AllowAny()]
 
     def perform_create(self, serializer):
