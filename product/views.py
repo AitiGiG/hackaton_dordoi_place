@@ -9,7 +9,7 @@ from .permissions import IsSellerPermission
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from favorite.models import Favorite
-
+from review.serializers import ReviewSerializer
 
 class StandartResultPagination(PageNumberPagination):
     page_size = 5
@@ -47,6 +47,10 @@ class ProductViewSet(viewsets.ModelViewSet):
             Favorite.objects.create(product=product, owner=request.user)
             return Response('Успешно добавлено', status=201)
 
-
-
-
+    @action(detail=True, methods=['POST'])
+    def review(self, request, pk=None):
+        product = self.get_object()
+        serializer = ReviewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(product=product, owner=request.user)
+        return Response('успешно добавлен', 201)
