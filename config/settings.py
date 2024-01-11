@@ -1,6 +1,7 @@
 
 from decouple import config
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -33,6 +34,7 @@ ADDITIONAL_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'drf_yasg',
+    
 ]
 
 OWN_APPS = [
@@ -41,7 +43,9 @@ OWN_APPS = [
     'seller',
     'favorite',
     'review',
-    'category'
+    'category',
+    'user'
+    
 ]
 
 INSTALLED_APPS = ADDITIONAL_APPS + OWN_APPS + DJANGO_APPS
@@ -116,6 +120,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = 'user.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
@@ -142,8 +147,16 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        'rest_framework.authentication.TokenAuthentication'
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework_simplejwt.authentication.JWTAuthentication'
     ]
+}
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
 
 SWAGGER_SETTINGS = {

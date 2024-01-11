@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 
 from .serializers import ProductSerializer
 from .models import Product
-from .permissions import IsOwnerOrAdmin
+from .permissions import IsSellerPermission
 
 class StandartResultPagination(PageNumberPagination):
     page_size = 5
@@ -19,12 +19,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['title']
     filersets_fields = ['category']
-
+    
     def get_permissions(self):
-        if self.request.method in ['POST', 'PATCH', 'PUT', 'DELETE']:
-            return [permissions.IsAdminUser(), IsOwnerOrAdmin()]
+        if self.request.method in ['POST', 'PUT', 'PATCH', 'DELETE']:
+            return [IsSellerPermission(), ]
         return [permissions.AllowAny()]
 
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
 
 
 

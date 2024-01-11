@@ -13,7 +13,7 @@ class Product(models.Model):
         related_name='products',
     )
     owner = models.ForeignKey(
-        'auth.User',
+        'user.User',
         on_delete=models.CASCADE,
         related_name='products',
     )
@@ -21,7 +21,7 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     image = models.ImageField(upload_to='product_images', blank=True)
     quantity = models.PositiveIntegerField(default=0)
-    avalible = models.BooleanField(default=True)
+    available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -34,6 +34,8 @@ class Product(models.Model):
     def save(self, *args, **kwargs):
         if self.quantity == 0:
             self.available = False
+        else:
+            self.available = True
         super().save(*args, **kwargs)
 
     
