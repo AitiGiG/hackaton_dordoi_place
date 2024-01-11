@@ -6,3 +6,4 @@ Pillow
 django-filter
 drf-yasg
 django-autoslug
+djangorestframework_simplejwt
