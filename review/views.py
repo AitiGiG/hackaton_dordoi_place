@@ -8,6 +8,7 @@ from rest_framework.pagination import PageNumberPagination
 from .permissions import IsOwner
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 class StandartResultPagination(PageNumberPagination):
     page_size = 1
@@ -32,11 +33,23 @@ class ReviewViewSet(ModelViewSet):
     def get_permissions(self, request, *args, **kwargs):
         if self.request.method in ['PATCH', 'PUT', 'DELETE']:
             return [permissions.IsAuthenticated(), IsOwner()]
-        return [permissions.AllowAny()]
+        return [IsAuthenticatedOrReadOnly()]
 
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
 
+    def list(self, request, *args, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset())
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(page, many=True)
+
+        # Добавьте общее количество отзывов в метаданные ответа
+        response_data = {
+            'count': self.get_queryset().count(),
+            'results': serializer.data
+        }
+
+        return self.get_paginated_response(response_data)
 
 
