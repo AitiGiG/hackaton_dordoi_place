@@ -1,15 +1,14 @@
 from rest_framework import serializers
-from .models import Favorite 
+from .models import Busket
 
-
-class FavoriteSerializer(serializers.Serializer):
+class BusketSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.email')
     post = serializers.ReadOnlyField(source='product.title')
-
+    quantity = serializers.IntegerField()
     class Meta:
+        model = Busket
         fields = '__all__'
-        model = Favorite
-    
+
     # def to_representation(self, instance):
     #     repr = super().to_representation(instance)
-    #     return repr['product'] 
+    #     return repr

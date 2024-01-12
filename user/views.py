@@ -4,8 +4,12 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView, TokenRefreshView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import ValidationError
-
-from .serializers import SellerRegistrationSerializer, UserRegistrationSerializer
+from .models import User
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from busket.models import Busket
+from product.models import Product
+from .serializers import SellerRegistrationSerializer, UserRegistrationSerializer ,UserSerializer
 
 class SellerRegistrationAPIView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -35,3 +39,14 @@ class LogoutView(TokenBlacklistView):
 
 class RefreshTokenView(TokenRefreshView):
     permission_classes = [permissions.AllowAny]
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    # if User.is_seller:
+    #     serializer_class = SellerRegistrationSerializer
+    # else:
+    #     serializer_class = UserRegistrationSerializer
+
+
+    
