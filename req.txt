@@ -6,4 +6,6 @@ Pillow
 django-filter
 drf-yasg
 django-autoslug
+celery
+redis
 djangorestframework_simplejwt
