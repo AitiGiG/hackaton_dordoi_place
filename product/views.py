@@ -11,6 +11,9 @@ from rest_framework.response import Response
 from favorite.models import Favorite
 from busket.models import Busket
 from favorite.serializers import FavoriteSerializer
+from review.serializers import ReviewSerializer
+
+
 class StandartResultPagination(PageNumberPagination):
     page_size = 5
     page_query_param= 'page'
@@ -51,6 +54,14 @@ class FavoriteViewSet(viewsets.ModelViewSet):
             favorite = Favorite.objects.create(product=product, owner=request.user)
             favorite.save()
             return Response('Успешно добавлено', status=201)
+    @action(detail=True, methods=['POST'])
+    def review(self, request, pk=None):
+        product = self.get_object()
+        serializer = ReviewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(product=product, owner=request.user)
+        return Response('успешно добавлен', 201)
+      
 class BusketViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -59,7 +70,6 @@ class BusketViewSet(viewsets.ModelViewSet):
     def add_busket(self, request, pk=None):
         # permissions = [permissions.IsAuthenticated()]
         product = self.get_object()
-
         busket_exists = Busket.objects.filter(product=product, owner=request.user).exists()
         if request.method == 'DELETE':
             Busket.objects.filter(product=product, owner=request.user).delete()
@@ -73,7 +83,6 @@ class BusketViewSet(viewsets.ModelViewSet):
             busket = Busket.objects.create(product=product, owner=request.user , quantity=request.data['quantity'])
             busket.save()
             return Response('Товар добавлен в корзину', status=201)
-        
     @action(detail=True, methods=['POST'])
     def buy_product(self, request, pk=None):
         product = self.get_object()
@@ -81,3 +90,4 @@ class BusketViewSet(viewsets.ModelViewSet):
         Product.objects.filter(id=product.id).update(quantity=product.quantity - int(busket.quantity))
         Busket.objects.filter(product=product, owner=request.user).delete()
         return Response('Товар куплен', status=201)
+
