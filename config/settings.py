@@ -44,7 +44,8 @@ OWN_APPS = [
     'favorite',
     'review',
     'category',
-    'user'
+    'user',
+    'busket',
     
 ]
 

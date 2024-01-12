@@ -2,17 +2,25 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistVi
 from rest_framework import status, permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
-
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.encoding import force_bytes
 from django.utils import timezone
 from datetime import timedelta
 import secrets
-
 from .models import User
 from .serializers import SellerRegistrationSerializer, UserRegistrationSerializer
 from .tasks import send_activation_email, send_password_reset_email
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenBlacklistView, TokenRefreshView
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import ValidationError
+from .models import User
+from rest_framework import viewsets
+from rest_framework.decorators import action
+from busket.models import Busket
+from product.models import Product
+from .serializers import SellerRegistrationSerializer, UserRegistrationSerializer ,UserSerializer
+
 
 class SellerRegistrationAPIView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -52,6 +60,7 @@ class LogoutView(TokenBlacklistView):
 
 class RefreshTokenView(TokenRefreshView):
     permission_classes = [permissions.AllowAny]
+
 
 class ActivateUserView(APIView):
     def get(self, request, token):
@@ -103,3 +112,12 @@ class PasswordResetConfirmView(APIView):
             return Response({'error': 'Invalid reset token or User ID'}, status=400)
 
         
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    # if User.is_seller:
+    #     serializer_class = SellerRegistrationSerializer
+    # else:
+    #     serializer_class = UserRegistrationSerializer
+
+
