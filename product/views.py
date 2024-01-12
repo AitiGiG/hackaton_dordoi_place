@@ -12,6 +12,7 @@ from favorite.models import Favorite
 from busket.models import Busket
 from favorite.serializers import FavoriteSerializer
 from review.serializers import ReviewSerializer
+from review.models import Review
 
 
 class StandartResultPagination(PageNumberPagination):
@@ -33,6 +34,7 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+    
 class FavoriteViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -54,14 +56,7 @@ class FavoriteViewSet(viewsets.ModelViewSet):
             favorite = Favorite.objects.create(product=product, owner=request.user)
             favorite.save()
             return Response('Успешно добавлено', status=201)
-    @action(detail=True, methods=['POST'])
-    def review(self, request, pk=None):
-        product = self.get_object()
-        serializer = ReviewSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save(product=product, owner=request.user)
-        return Response('успешно добавлен', 201)
-      
+    
 class BusketViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
@@ -91,3 +86,18 @@ class BusketViewSet(viewsets.ModelViewSet):
         Busket.objects.filter(product=product, owner=request.user).delete()
         return Response('Товар куплен', status=201)
 
+class ReviewViewSet(viewsets.ModelViewSet):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    @action(detail=True, methods=['POST', 'DELETE'])
+    def review(self, request, pk=None):
+        product = self.get_object()
+        if request.method == 'DELETE':
+            Review.objects.filter(product=product, owner=request.user, id=request.data['id']).delete()
+            return Response('успешно удален', 204)
+        serializer = ReviewSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save(product=product, owner=request.user)
+        return Response('успешно добавлен', 201)
+      

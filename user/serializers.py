@@ -2,6 +2,7 @@ from rest_framework import serializers
 from .models import User
 from busket.serializers import BusketSerializer
 from favorite.serializers import FavoriteSerializer
+from review.serializers import ReviewSerializer
 class SellerRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -49,11 +50,12 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('email', 'password', 'username', 'shop_name', 'buskets', 'favorites')
+        fields = ('email', 'password', 'username', 'shop_name', 'buskets', 'favorites', 'reviews')
         extra_kwargs = {'password': {'write_only': True}}
 
     buskets = serializers.SerializerMethodField(method_name='get_buskets')
     favorites = serializers.SerializerMethodField(method_name='get_favorites')
+    reviews = serializers.SerializerMethodField(method_name='get_reviews')
     def get_buskets(self, instance):
         buskets = getattr(instance, 'buskets', None)
         if buskets is not None:
@@ -66,3 +68,10 @@ class UserSerializer(serializers.ModelSerializer):
             favorites_data = FavoriteSerializer(favorites.all(), many=True).data
             return favorites_data
         return None  # Или подходящее значение по умолчанию, если favorites не существует
+    
+    def get_reviews(self, instance):
+        reviews = instance.reviews.all()
+        serializer = ReviewSerializer(
+            reviews, many=True
+        ) 
+        return serializer.data

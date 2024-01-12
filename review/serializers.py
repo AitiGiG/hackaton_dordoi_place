@@ -2,9 +2,10 @@ from rest_framework import serializers
 from .models import Review
 
 class ReviewSerializer(serializers.ModelSerializer):
-    owner = serializers.ReadOnlyField(source='owner.username')
+    id = serializers.ReadOnlyField()
+    owner = serializers.ReadOnlyField(source='owner.email')
     product = serializers.ReadOnlyField(source='product.title')
 
     class Meta:
-        exclude = ['id', 'created_at']
+        exclude = ['created_at']
         model = Review
