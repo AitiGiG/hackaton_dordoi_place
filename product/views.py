@@ -13,6 +13,8 @@ from busket.models import Busket
 from favorite.serializers import FavoriteSerializer
 from review.serializers import ReviewSerializer
 from review.models import Review
+from category.models import Category
+from category.serializers import CategorySerializer
 
 
 class StandartResultPagination(PageNumberPagination):
@@ -34,6 +36,17 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+    
+    @action(detail=False, methods=['GET'], url_path='by_category/(?P<category_slug>[-\w]+)')
+    def get_products_by_category_slug(self, request, category_slug=None):
+        try:
+            category = Category.objects.get(slug=category_slug)
+        except Category.DoesNotExist:
+            return Response({"detail": "Category not found"}, status=404)
+
+        products = Product.objects.filter(category=category)
+        serializer = ProductSerializer(products, many=True)
+        return Response(serializer.data)
     
 class FavoriteViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -63,7 +76,6 @@ class BusketViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated]
     @action (detail=True, methods=['POST', 'DELETE'])
     def add_busket(self, request, pk=None):
-        # permissions = [permissions.IsAuthenticated()]
         product = self.get_object()
         busket_exists = Busket.objects.filter(product=product, owner=request.user).exists()
         if request.method == 'DELETE':
@@ -72,10 +84,9 @@ class BusketViewSet(viewsets.ModelViewSet):
         
         if busket_exists:
             return Response('Товар уже в корзине', status=400)
-        if int(request.data['quantity']) < 0:
             return Response('Количество не может быть отрицательным', status=400)
         else:
-            busket = Busket.objects.create(product=product, owner=request.user , quantity=request.data['quantity'])
+            busket = Busket.objects.create(product=product, owner=request.user , quantity=request.data['quantity'] if request.data['quantity'] else 1)
             busket.save()
             return Response('Товар добавлен в корзину', status=201)
     @action(detail=True, methods=['POST'])
