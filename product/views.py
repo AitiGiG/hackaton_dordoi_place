@@ -21,13 +21,13 @@ import logging
 logger = logging.getLogger('product')
 
 class StandartResultPagination(PageNumberPagination):
-    page_size = 5
+    page_size = 1
     page_query_param= 'page'
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = StandartResultPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['title', 'category__title', 'subcategory__title', 'description']
     filersets_fields = ['category']
