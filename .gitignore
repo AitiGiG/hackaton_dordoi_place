@@ -29,6 +29,7 @@ images/
 **/migrations/**
 !**/migrations
 !**/migrations/__init__.py
+/config_cache
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
