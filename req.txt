@@ -9,3 +9,6 @@ django-autoslug
 celery
 redis
 djangorestframework_simplejwt
+requests
+telebot
+pytelegrambotapi

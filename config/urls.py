@@ -8,9 +8,9 @@ from drf_yasg.views import get_schema_view
 
 schema_view = get_schema_view(
     openapi.Info(
-        title="BLOG API",
+        title="DORDOI_PLACE",
 
-        description="mini service for posting your life",
+        description="This is the marketplace that everyone has dreamed of",
 
         default_version="v1",
     ),

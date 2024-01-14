@@ -1,7 +1,7 @@
 from rest_framework.serializers import ModelSerializer
 from .models import Product
 from rest_framework import serializers
-from category.models import Category
+from category.models import Category , Subcategory
 from busket.serializers import BusketSerializer
 from favorite.serializers import FavoriteSerializer
 from review.serializers import ReviewSerializer
@@ -12,10 +12,7 @@ class ProductSerializer(ModelSerializer):
         fields = ['id', 'title', 'category', 'subcategory', 'price', 'description', 'image', 'quantity', 'available', 'favorites', 'owner', 'reviews']
 
     owner = serializers.ReadOnlyField(source='owner.email')
-    category = serializers.StringRelatedField()
-    subcategory = serializers.StringRelatedField()
     favorites = serializers.SerializerMethodField(method_name='get_favorites_counter')
-
     reviews = serializers.SerializerMethodField(method_name='get_reviews')
     def get_favorites_counter(self, instance):
         favorites_counter = instance.favorites.all().count()
