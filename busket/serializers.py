@@ -3,7 +3,7 @@ from .models import Busket
 
 class BusketSerializer(serializers.ModelSerializer):
     owner = serializers.ReadOnlyField(source='owner.email')
-    post = serializers.ReadOnlyField(source='product.title')
+    product = serializers.ReadOnlyField(source='product.title')
     quantity = serializers.IntegerField()
     class Meta:
         model = Busket

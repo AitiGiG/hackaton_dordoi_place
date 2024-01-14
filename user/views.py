@@ -20,7 +20,9 @@ from rest_framework.decorators import action
 from busket.models import Busket
 from product.models import Product
 from .serializers import SellerRegistrationSerializer, UserRegistrationSerializer ,UserSerializer
-
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.pagination import PageNumberPagination
 
 class SellerRegistrationAPIView(APIView):
     permission_classes = [permissions.AllowAny]
@@ -121,6 +123,9 @@ class PasswordResetConfirmView(APIView):
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    pagination_class = PageNumberPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['email', 'username']
     # if User.is_seller:
     #     serializer_class = SellerRegistrationSerializer
     # else:
