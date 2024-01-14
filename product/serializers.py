@@ -12,8 +12,6 @@ class ProductSerializer(ModelSerializer):
         fields = ['id', 'title', 'category', 'subcategory', 'price', 'description', 'image', 'quantity', 'available', 'favorites', 'owner', 'reviews']
 
     owner = serializers.ReadOnlyField(source='owner.email')
-    category = serializers.StringRelatedField()
-    subcategory = serializers.StringRelatedField()
     favorites = serializers.SerializerMethodField(method_name='get_favorites_counter')
 
     reviews = serializers.SerializerMethodField(method_name='get_reviews')
