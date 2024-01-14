@@ -45,7 +45,6 @@ OWN_APPS = [
     'category',
     'user',
     'busket',
-    
 ]
 
 INSTALLED_APPS = ADDITIONAL_APPS + OWN_APPS + DJANGO_APPS
@@ -173,7 +172,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'fitstreety@gmail.com'
+EMAIL_HOST_USER = config('EMAIL')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 CELERY_BROKER_URL = 'redis://localhost:6379/0'
