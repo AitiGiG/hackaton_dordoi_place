@@ -56,9 +56,15 @@ class UserRegistrationAPIView(APIView):
 
 class LoginView(TokenObtainPairView):
     permission_classes = [permissions.AllowAny]
+    
+
 
 class LogoutView(TokenBlacklistView):
     permission_classes = [permissions.AllowAny]
+    def post(self, request, *args, **kwargs):
+        super().post(request, *args, **kwargs)
+        return Response({'message': 'Logout successfully'}, status=200)
+
 
 class RefreshTokenView(TokenRefreshView):
     permission_classes = [permissions.AllowAny]

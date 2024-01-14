@@ -13,18 +13,24 @@ from busket.models import Busket
 from favorite.serializers import FavoriteSerializer
 from review.serializers import ReviewSerializer
 from review.models import Review
+from .tasks import send_purchase_email, send_review_notification_email
+from django.views.decorators.cache import cache_page
+from django.utils.decorators import method_decorator
+import logging
 from category.models import Category
 from category.serializers import CategorySerializer
 
 
+logger = logging.getLogger('product')
+
 class StandartResultPagination(PageNumberPagination):
-    page_size = 5
+    page_size = 1
     page_query_param= 'page'
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
-    pagination_class = PageNumberPagination
+    pagination_class = StandartResultPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
     search_fields = ['title', 'category__title', 'subcategory__title', 'description']
     filersets_fields = ['category']
@@ -36,6 +42,16 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
+
+    @method_decorator(cache_page(60*15))
+    def list(self, request, *args, **kwargs):
+        logger.debug("Вызван метод list для ProductViewSet")
+        response =  super(ProductViewSet, self).list(request, *args, **kwargs)
+        if response.has_header('From-Cache'):
+            logger.debug("Ответ получен из кеша")
+        else:
+            logger.debug("Ответ получен не из кеша")
+        return response
     
     @action(detail=False, methods=['GET'], url_path='by_category/(?P<category_slug>[-\w]+)')
     def get_products_by_category_slug(self, request, category_slug=None):
@@ -94,6 +110,14 @@ class BusketViewSet(viewsets.ModelViewSet):
         product = self.get_object()
         busket = Busket.objects.get(product=product, owner=request.user)
         Product.objects.filter(id=product.id).update(quantity=product.quantity - int(busket.quantity))
+
+        send_purchase_email.delay(
+            owner_email=product.owner.email, 
+            product_name=product.title, 
+            quantity= busket.quantity,  
+            buyer_username=request.user.username
+        )
+
         Busket.objects.filter(product=product, owner=request.user).delete()
         return Response('Товар куплен', status=201)
 
@@ -110,5 +134,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
         serializer = ReviewSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save(product=product, owner=request.user)
+
+        send_review_notification_email.delay(
+        product_owner_email=product.owner.email,
+        reviewer_username=request.user.username,
+        product_title=product.title,
+        review_content=request.data['content']
+        )
+
         return Response('успешно добавлен', 201)
       
