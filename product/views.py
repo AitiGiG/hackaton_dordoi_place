@@ -46,12 +46,8 @@ class ProductViewSet(viewsets.ModelViewSet):
     @method_decorator(cache_page(60*15))
     def list(self, request, *args, **kwargs):
         logger.debug("Вызван метод list для ProductViewSet")
-        response =  super(ProductViewSet, self).list(request, *args, **kwargs)
-        if response.has_header('From-Cache'):
-            logger.debug("Ответ получен из кеша")
-        else:
-            logger.debug("Ответ получен не из кеша")
-        return response
+        return super(ProductViewSet, self).list(request, *args, **kwargs)
+        
     
     @action(detail=False, methods=['GET'], url_path='by_category/(?P<category_slug>[-\w]+)')
     def get_products_by_category_slug(self, request, category_slug=None):
