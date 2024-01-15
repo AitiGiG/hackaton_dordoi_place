@@ -150,7 +150,7 @@ python3 manage.py runserver
 Здесь более подробное описание функционала нашего проекта.
 ***
 
-- ### Account (Пользователь)
+- ### User (Пользователь)
 
 ***Create***
 
@@ -164,15 +164,15 @@ python3 manage.py runserver
 
 ***Read***
 
-По 'GET' запросу через http://localhost:8000/account/ можно вывести список  зарегистрированных пользователей
+По 'GET' запросу через http://localhost:8000/user/users/ можно вывести список  зарегистрированных пользователей
 
 ***Update***
 
-По 'PATCH' запросу через http://localhost:8000/account/user_detail/<int:user_id>/ можно будет обновлять данные по id. В случае успешного изменения выводится сообщение: ***'Account is updated'***
+По 'PATCH' запросу через http://localhost:8000/user/users/<int:user_id>/ можно будет обновлять данные по id. В случае успешного изменения выводится сообщение: ***'Account is updated'***
 
 ***Delete***
 
-По 'DELETE' запросу через http://localhost:8000/account/user_detail/<int:user_id>/ можно будет обновлять данные по id. В случае успешного изменения выводится сообщение: ***'Account is deleted'***
+По 'DELETE' запросу через http://localhost:8000/user/users/<int:user_id>/ можно будет обновлять данные по id. В случае успешного изменения выводится сообщение: ***'Account is deleted'***
 
 ** Также здесь производится авторизация и выход пользователя с программы
 
